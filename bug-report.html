@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BugReport</title>
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <script src="https://unpkg.com/naive-ui@2.38.2/dist/index.prod.js"></script>
+  </head>
+
+  <body>
+    <div id="app">
+      <n-data-table :columns="columns" :data="tableData" :cascade="false" allow-checking-not-loaded
+        @load="onLoad"></n-data-table>
+      <n-button type="success" secondary size="small" @click="handleRefresh">刷新</n-button>
+    </div>
+    <script>
+      const { ref, onMounted } = Vue
+      const App = {
+        setup() {
+          const columns = [
+            { key: "example", title: "Example" }
+          ]
+          const tableData = ref([])
+          const onLoad = (row) => {
+            return new Promise((resolve) => {
+              setTimeout(() => {
+                row.children = [{ key: `${row.key}-1`, example: `${row.key}-1` }]
+                resolve()
+              }, 1e3)
+            })
+          }
+          const init = () => {
+            tableData.value = [
+              { key: "p1", example: "p1", isLeaf: false },
+              { key: "p2", example: "p2", isLeaf: false },
+              { key: "p3", example: "p3", isLeaf: false }
+            ]
+          }
+          const handleRefresh = () => {
+            init()
+          }
+          onMounted(() => {
+            init()
+          })
+          return {
+            columns,
+            tableData,
+            message: 'naive',
+            onLoad,
+            handleRefresh
+          }
+        }
+      }
+      const app = Vue.createApp(App)
+      app.use(naive)
+      app.mount('#app')
+    </script>
+  </body>
+
+</html>
